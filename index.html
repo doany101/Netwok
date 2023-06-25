@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CompTIA Network+ Exam</title>
+  <style>
+    /* CSS styles */
+
+    .container {
+      text-align: center;
+    }
+
+    #quizTitle {
+      text-align: center;
+    }
+
+    #question {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    #options {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .nav-button {
+      margin: 0 10px;
+    }
+
+    #endBtn {
+      margin-left: auto;
+    }
+
+    #resultSection {
+      display: none;
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    #resultSection p {
+      margin: 5px 0;
+    }
+   
+    
+     .correct-answer {
+      color: green;
+    }
+    .incorrect-answer {
+      color: red;
+    }
+    #buttonSection {
+      text-align: center;
+    }
+    #restartBtn {
+      display: none;
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="quizTitle">CompTIA Network+ Exam</h1>
+    <div id="question"></div>
+    <div id="options"></div>
+    <div id="buttonSection" class="button-container">
+      <button id="prevBtn" class="nav-button" onclick="previousQuestion()" style="display: none;">Previous</button>
+      <button id="nextBtn" class="nav-button" onclick="nextQuestion()">Next</button>
+      <button id="endBtn" onclick="endExam()">End Exam</button>
+      <button id="restartBtn" onclick="restartExam()" style="display: none;">Take Another Chance</button>
+    </div>
+    <div id="resultSection">
+      <h2>Exam Results</h2>
+      <div id="result"></div>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript code
+
+    var currentQuestion = 0;
+    var userAnswers = [];
+    var questions = [{
+                question: "Question 1: What is the maximum number of hosts that can be addressed in a Class C network?",
+                options: ["256", "65,536", "16,777,216", "4,294,967,296"],
+                answer: "256"
+            },
+            {
+                question: "Question 2: What protocol is used for secure communication over a network?",
+                options: ["FTP", "SSH", "SMTP", "POP3"],
+                answer: "SSH"
+            },
+            {
+                question: "Question 3: Which of the following devices operates at Layer 2 of the OSI model?",
+                options: ["Router", "Switch", "Firewall", "Bridge"],
+                answer: "Switch"
+            },
+            // Add the remaining questions here...
+        ];
+
+    function displayQuestion() {
+      var questionElement = document.getElementById("question");
+      var optionsElement = document.getElementById("options");
+
+      questionElement.innerHTML = "";
+      optionsElement.innerHTML = "";
+
+      var question = questions[currentQuestion];
+      questionElement.textContent = question.question;
+
+      for (var i = 0; i < question.options.length; i++) {
+        var option = question.options[i];
+
+        var optionElement = document.createElement("div");
+        optionElement.className = "option";
+
+        var radioBtn = document.createElement("input");
+        radioBtn.type = "radio";
+        radioBtn.name = "option";
+        radioBtn.value = option;
+        radioBtn.onchange = function () {
+          selectAnswer(this.value);
+        };
+
+        var label = document.createElement("label");
+        label.textContent = option;
+
+        optionElement.appendChild(radioBtn);
+        optionElement.appendChild(label);
+        optionsElement.appendChild(optionElement);
+      }
+
+      document.getElementById("prevBtn").style.display = currentQuestion === 0 ? "none" : "inline-block";
+      document.getElementById("nextBtn").style.display = currentQuestion === questions.length - 1 ? "none" : "inline-block";
+    }
+
+    function selectAnswer(option) {
+      userAnswers[currentQuestion] = option;
+    }
+
+    function previousQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        displayQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        displayQuestion();
+      }
+    }
+
+ function endExam() {
+  var confirmation = confirm("Are you sure you want to end the exam?");
+  if (confirmation) {
+    document.getElementById("question").style.display = "none";
+    document.getElementById("options").style.display = "none";
+    document.getElementById("buttonSection").style.display = "none";
+    document.getElementById("resultSection").style.display = "block";
+    showScore();
+  }
+}
+
+function showScore() {
+  var score = 0;
+  var resultElement = document.getElementById("result");
+  resultElement.innerHTML = "";
+
+  for (var i = 0; i < questions.length; i++) {
+    var question = questions[i];
+    var userAnswer = userAnswers[i];
+
+    var questionElement = document.createElement("p");
+    questionElement.textContent = question.question;
+
+    var answerElement = document.createElement("span");
+    answerElement.textContent = " Your Answer: " + (userAnswer ? userAnswer : "Not answered");
+    questionElement.appendChild(document.createElement("br")); // Add a line break
+    questionElement.appendChild(answerElement);
+
+    if (userAnswer === question.answer) {
+      questionElement.classList.add("correct-answer");
+      score++;
+    } else {
+      var correctAnswerElement = document.createElement("span");
+      correctAnswerElement.textContent = " Correct Answer: " + question.answer;
+      questionElement.appendChild(document.createElement("br")); // Add a line break
+      questionElement.appendChild(correctAnswerElement);
+      questionElement.classList.add("incorrect-answer"); // Add class for incorrect answers
+    }
+
+    resultElement.appendChild(questionElement);
+    resultElement.appendChild(document.createElement("br")); // Add a line break
+  }
+
+  var scoreElement = document.createElement("p");
+  scoreElement.textContent = "Your Score: " + score + "/" + questions.length;
+  resultElement.appendChild(scoreElement);
+
+  var restartButton = document.createElement("button");
+  restartButton.textContent = "Take Another Chance";
+  restartButton.addEventListener("click", restartExam);
+  resultElement.appendChild(document.createElement("br")); // Add a line break
+  resultElement.appendChild(restartButton);
+}
+
+function restartExam() {
+  document.getElementById("resultSection").style.display = "none";
+  document.getElementById("question").style.display = "block";
+  document.getElementById("options").style.display = "block";
+  document.getElementById("buttonSection").style.display = "block";
+  currentQuestionIndex = 0;
+  userAnswers = [];
+  displayQuestion();
+}
+
+document.getElementById("submitBtn").addEventListener("click", submitAnswer);
+document.getElementById("nextBtn").addEventListener("click", displayNextQuestion);
+document.getElementById("prevBtn").addEventListener("click", displayPreviousQuestion);
+document.getElementById("endBtn").addEventListener("click", endExam);
+
+displayQuestion();
+  </script>
+</body>
+</html>
